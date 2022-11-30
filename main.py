@@ -2,8 +2,8 @@ from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, IntegerField, FloatField
+from wtforms.validators import DataRequired, NumberRange
 import requests
 
 app = Flask(__name__)
@@ -26,13 +26,13 @@ class Movie(db.Model):
     img_url = db.Column(db.String(1000), nullable=False)
 
 class EditForm(FlaskForm):
-    rating = StringField(label='Your Rating out of 10 e.g 7.5', validators=[DataRequired()])
-    review = StringField(label='Your Review', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    rating = FloatField(label='Ваша оцінка до 10 наприклад 7.5', validators=[DataRequired()])
+    review = StringField(label='Ваші враження', validators=[DataRequired()])
+    submit = SubmitField('Підтвердити')
 
 class AddMovie(FlaskForm):
-    title = StringField(label='Movie Title', validators=[DataRequired()])
-    submit = SubmitField('Add')
+    title = StringField(label='Назва фільму', validators=[DataRequired()])
+    submit = SubmitField('Добавити')
 
 @app.route("/")
 def home():
@@ -52,7 +52,7 @@ def edit():
         movie.review = form.review.data
         db.session.commit()
         return redirect('/')
-    return render_template('edit.html', form=form)
+    return render_template('edit.html', form=form, movie=movie)
 
 @app.route('/delete')
 def delete():
